@@ -1,33 +1,67 @@
-
 // meta variables
 String PLAYER_IMAGE = "player.png";
 String EARTH_IMAGE = "earth.jpg";
+HashMap<Integer, PImage> INVADER_SPRITE;
+int KEY_SPACE = 32;
+int KEY_LEFT = 37;
+int KEY_RIGHT = 39;
 
+// game physic constants
+int DX = 5;
+int MOVE_RIGHT = DX;
+int MOVE_LEFT = - DX;
+
+/*
+*
+*/
 abstract class Drawable{
 	abstract void draw();
 }
 
-class Player extends Drawable{
-	int x, y, size;
-	PImage img;
+class Entity extends Drawable{
+	// coordinates of the hitbox
+	int x0, y0, x1, y1;
+	PImage sprite;
 	
-	Player(int x, int y, int size) {
-		this.x = x;
-		this.y = y;
-		this.size = size;
-		this.img = loadImage(PLAYER_IMAGE);
-		this.img.resize(size, size);
+	Entity(int x, int y, int size, PImage sprite) {
+		int half = int(size / 2);
+		this.x0 = x - half;
+		this.y0 = y - half;
+		this.x1 = x + half;
+		this.y1 = x + half;
+		this.sprite = sprite;
+this.sprite.resize(size, size);
 	}
 	
-	void move(int dx) {
-		this.x += dx; 
+	void move(int dx, int dy) {
+		this.x0 += dx;
+		this.x1 += dx;
+		this.y0 += dy;
+		this.y1 += dy;
+	}
+	
+	boolean contains(int x, int y) {
+		return this.x0 <= x && this.x1 >= x && this.y0 <= y && this.y1 >= y;
 	}
 	
 	void draw() {
-		image(this.img, int(x - this.size / 2), y);
+		image(this.sprite, this.x0, this.y0);
 	}
 }
 
+class Player extends Entity{
+	Player(int x, int y, int size) {
+  super(x, y, size, loadImage(PLAYER_IMAGE));		
+	}
+}
+
+class Invader extends Entity{  
+	Invader(int x, int y, int size, int spriteVersion) {
+		super(x, y, size, INVADER_SPRITE.get(spriteVersion));
+	}
+}
+
+// set of all objects to be drawn
 class Scene extends Drawable{
 	int canvasWidth, canvasHeight;
 	PImage earthImage;
@@ -61,20 +95,53 @@ class Scene extends Drawable{
 // global game configuration
 Scene scene;
 Player player;
+ArrayList<Invader> INVADERS;
 
 void settings() {
-	scene = new Scene(500, 500);
+  // load invaders sprite map
+  INVADER_SPRITE = new HashMap();
+  for(int i=0; i<5; i++){
+    INVADER_SPRITE.put(i, loadImage(String.format("sprite_%s.png", i)));
+  }
+  
+  INVADERS = new ArrayList();
+  int size = 80, rows = 5, columns = 8;
+  for(int i=0; i<rows; i++){
+    for(int j=0; j<columns; j++){
+      INVADERS.add(new Invader(j*size+size, i*size+size, size, int(random(5))));
+    
+    }
+  }
+  
+	scene = new Scene(900, 900);
 	player = scene.getPlayer();
 	size(scene.canvasWidth, scene.canvasHeight);
 }
 
 void draw() {
-	//player.x += 1;
 	scene.draw();
+  for(int k=0; k<INVADERS.size(); k++){
+     INVADERS.get(k).draw();
+  }
+}
+
+void descendInvaders(){
+  for(int i=0; i<INVADERS.size(); i++){
+    INVADERS.get(i).move(0, 50); 
+  }
 }
 
 void keyPressed() {
-	if (key == LEFT) {
-		println("move left");
-	}
+  println(keyCode);
+  switch(keyCode){
+    case KEY_LEFT:
+    player.move(MOVE_LEFT, 0);
+    break;
+    case KEY_RIGHT:
+    player.move(MOVE_RIGHT, 0);
+    break;
+    case KEY_SPACE:
+    descendInvaders();
+    break;
+  }
 }
