@@ -2,9 +2,9 @@
 String PLAYER_IMAGE = "player.png";
 String EARTH_IMAGE = "earth.jpg";
 HashMap<Integer, PImage> INVADER_SPRITE;
-int KEY_SPACE = 32;
-int KEY_LEFT = 37;
-int KEY_RIGHT = 39;
+final int KEY_SPACE = 32;
+final int KEY_LEFT = 37;
+final int KEY_RIGHT = 39;
 
 // game physic constants
 int DX = 5;
@@ -30,7 +30,7 @@ class Entity extends Drawable{
 		this.x1 = x + half;
 		this.y1 = x + half;
 		this.sprite = sprite;
-this.sprite.resize(size, size);
+		this.sprite.resize(size, size);
 	}
 	
 	void move(int dx, int dy) {
@@ -51,7 +51,7 @@ this.sprite.resize(size, size);
 
 class Player extends Entity{
 	Player(int x, int y, int size) {
-  super(x, y, size, loadImage(PLAYER_IMAGE));		
+		super(x, y, size, loadImage(PLAYER_IMAGE));		
 	}
 }
 
@@ -98,21 +98,22 @@ Player player;
 ArrayList<Invader> INVADERS;
 
 void settings() {
-  // load invaders sprite map
-  INVADER_SPRITE = new HashMap();
-  for(int i=0; i<5; i++){
-    INVADER_SPRITE.put(i, loadImage(String.format("sprite_%s.png", i)));
-  }
-  
-  INVADERS = new ArrayList();
-  int size = 80, rows = 5, columns = 8;
-  for(int i=0; i<rows; i++){
-    for(int j=0; j<columns; j++){
-      INVADERS.add(new Invader(j*size+size, i*size+size, size, int(random(5))));
-    
-    }
-  }
-  
+	// load invaders sprite map
+	INVADER_SPRITE = new HashMap();
+	for (int i = 0; i < 5; i++) {
+		INVADER_SPRITE.put(i, loadImage(
+			String.format("sprite_%s.png", i)));
+	}
+	
+	INVADERS = new ArrayList();
+	int size = 80, rows = 5, columns = 8;
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < columns; j++) {
+			INVADERS.add(new Invader(j * size + size, i * size + size, size, int(random(5))));
+			
+		}
+	}
+	
 	scene = new Scene(900, 900);
 	player = scene.getPlayer();
 	size(scene.canvasWidth, scene.canvasHeight);
@@ -120,28 +121,27 @@ void settings() {
 
 void draw() {
 	scene.draw();
-  for(int k=0; k<INVADERS.size(); k++){
-     INVADERS.get(k).draw();
-  }
+	for (int k = 0; k < INVADERS.size(); k++) {
+		INVADERS.get(k).draw();
+	}
 }
 
-void descendInvaders(){
-  for(int i=0; i<INVADERS.size(); i++){
-    INVADERS.get(i).move(0, 50); 
-  }
+void descendInvaders() {
+	for (int i = 0; i < INVADERS.size(); i++) {
+		INVADERS.get(i).move(0, 50); 
+	}
 }
 
 void keyPressed() {
-  println(keyCode);
-  switch(keyCode){
-    case KEY_LEFT:
-    player.move(MOVE_LEFT, 0);
-    break;
-    case KEY_RIGHT:
-    player.move(MOVE_RIGHT, 0);
-    break;
-    case KEY_SPACE:
-    descendInvaders();
-    break;
-  }
+	switch(keyCode) {
+		case KEY_LEFT:
+		player.move(MOVE_LEFT, 0);
+		break;
+		case KEY_RIGHT:
+		player.move(MOVE_RIGHT, 0);
+		break;
+		case KEY_SPACE:
+		descendInvaders();
+		break;
+	}
 }
