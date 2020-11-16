@@ -15,14 +15,20 @@ class Earth extends Drawable{
 }
 
 /**
-* Store drawable objects
+* Manage rendering of drawables entities.
 */
 class Scene extends Drawable{
+	// scene properties
 	int width, height;
-	ArrayList<Drawable> items;
 	Earth earth;
+	
+	// state variables
 	boolean isGameOver = false;
 	String gameOverMessage = "";
+	
+	// drawable entities
+	ArrayList<Drawable> items;
+	ArrayList<Invader> invaders;
 	ArrayList<Shot> shots;
 	
 	Scene(int width, int height) {
@@ -40,16 +46,29 @@ class Scene extends Drawable{
 	void clear() {
 		this.items = new ArrayList();
 		this.shots = new ArrayList();
-		// TODO: refactoring, shouldn't be in the scene
+		this.invaders = new ArrayList();
+		
+		// TODO: refactoring, shouldn't be in the scene but in a state storage
 		this.isGameOver = false;
 	}
 	
+	/**
+	* Setters and deleters
+	*/
 	void addShot(Shot shot) {
 		this.shots.add(shot);
 	}
 	
 	void removeShot(Shot shot) {
 		this.shots.remove(shot);
+	}
+	
+	void addInvader(Invader invader) {
+		this.invaders.add(invader);
+	}
+	
+	void removeInvader(Invader invader) {
+		this.invaders.remove(invader);
 	}
 	
 	void reset() {
@@ -94,6 +113,10 @@ class Scene extends Drawable{
 			shots.get(i).draw();
 		}
 		
+		for (int i = 0; i < invaders.size(); i++) {
+			invaders.get(i).draw();
+		}
+		
 		if (isGameOver) {
 			int titleWidth = int(0.8 * this.width * 0.1);
 			int halfWidth = int(this.width / 2);
@@ -111,12 +134,12 @@ class Scene extends Drawable{
 			fill(0, 0, 0);
 			for (int x =- borderWidth; x < borderWidth + 1; x++) {
 				for (int y =- borderWidth; y < borderWidth + 1; y++) {
-					text(this.gameOverMessage + "\nGame over!", halfWidth - x, halfHeight - y);
+					text(this.gameOverMessage, halfWidth - x, halfHeight - y);
 				}
 			}
 			
 			fill(255, 255, 255);
-			text(this.gameOverMessage + "\nGame over!", halfWidth, halfHeight);
+			text(this.gameOverMessage, halfWidth, halfHeight);
 		}
 	}
 }
