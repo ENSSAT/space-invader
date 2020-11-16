@@ -25,6 +25,8 @@ class Shot extends Drawable{
 		boolean move = this.canMove();
 		if (move) {
 			y1 += dy;
+		} else {
+			scene.remove(this);
 		}
 		return move;
 	}
@@ -34,8 +36,25 @@ class Shot extends Drawable{
 	}
 	
 	void draw() {
-		stroke(0xFFCCFFAA);
+		int clr = 0xFFFF0000;
+		fill(clr);
+		stroke(clr);
 		strokeWeight(4);
+		circle(x, y1, 15);
+	}
+}
+
+
+class Laser extends Shot{
+	Laser(Scene scene, int x, int y, int dy) {
+		super(scene, x, y, dy);
+	}
+	void draw() {
+		int clr = 0xFFFF0000;
+		fill(clr);
+		stroke(clr);
+		strokeWeight(4);
+		rect(x - 7, y0, 15, y1 - y0);
 		circle(x, y1, 15);
 	}
 }
@@ -43,7 +62,7 @@ class Shot extends Drawable{
 
 class Entity extends Drawable{
 	// coordinates of the center
-	int x, y;
+	int x, y, size;
 	// coordinates of the hitbox
 	int x0, y0, x1, y1;
 	// texture of the entity
@@ -55,9 +74,11 @@ class Entity extends Drawable{
 		this.scene = scene;
 		this.scene.add(this);
 		
-		int half = int(size / 2);
 		this.x = x;
 		this.y = y;
+		this.size = size;
+		
+		int half = int(size / 2);
 		this.x0 = x - half;
 		this.y0 = y - half;
 		this.x1 = x + half;
