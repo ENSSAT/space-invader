@@ -2,6 +2,8 @@
 Scene scene;
 Player player;
 ArrayList<Invader> invaders;
+Keyboard keyboard;
+
 
 HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 	HashMap<Integer, PImage> sprites = new HashMap();
@@ -29,26 +31,26 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
-	  invaders.add(
-	  			new Invader(scene, j, i, invadersSize, invadersSprites.get(i))
-	 );
+			invaders.add(
+				new Invader(scene, j, i, invadersSize, invadersSprites.get(i))
+				);
 		}
 	}
 	
-	invaders.get(0).shot();
+	// make the first invader shot... invaders.get(0).shot();
 }
 
-void settings() {
+void settings() {	
 	// game configuration
 	int sceneWidth = 1000;
 	int sceneHeight = 800;
 	
+	// initialize a map containing pressed keys
+	keyboard = new Keyboard();
+	
 	// initialize a new game
 	size(sceneWidth, sceneHeight);
 	scene = new Scene(sceneWidth, sceneHeight);
-	//scene.reset();
-	//scene.gameOver("Welcome back!");
-	//newGame(scene, invadersRow, invadersCols);
 	scene.gameOver("Welcome back!");
 }
 
@@ -57,6 +59,10 @@ int invadersDy = 50;
 
 // gameloop
 void draw() {
+	// perform actions when keys are pressed
+	eventsHandler();
+	
+	// draw all drawable items
 	scene.draw();
 	
 	// don't perform aliens move logic once game has ended
@@ -100,9 +106,9 @@ void draw() {
 	// move each shot to the next step
 	for (int k = 0; k < scene.shots.size(); k++) {
 		Shot shot = scene.shots.get(k);
-
+		
 		// try to move a shot, or destroy instance if it reached border
-		if(!shot.move()){
+		if (!shot.move()) {
 			shot.destroy();
 			break;
 		}
@@ -113,11 +119,11 @@ void draw() {
 				scene.gameOver("You were killed!\nGame over");
 				break;
 			}
-		}else if(shot.entity.hasGroup(GROUP_PLAYER)){
+		} else if (shot.entity.hasGroup(GROUP_PLAYER)) {
 			// if shot was initiated by a player, test it against invaders
 			for (int l = 0; l < scene.invaders.size(); l++) {
 				invader = scene.invaders.get(l);
-				if(shot.hurt(invader)){
+				if (shot.hurt(invader)) {
 					invader.destroy();
 					shot.destroy();
 				}
@@ -130,24 +136,24 @@ void draw() {
 		invader = scene.invaders.get(k);
 		invader.move(invadersDx, borderReached ? invadersDy : 0);
 	}
-
+	
 	// if no invaders remains, game is finished
-	if(scene.invaders.size() == 0){
+	if (scene.invaders.size() == 0) {
 		scene.gameOver("You win!");
 	}
+	
 }
 
 int playerDx = 5;
 
-void keyPressed() {
-	switch(keyCode) {
-		case KEY_LEFT:
+void eventsHandler() {
+	if (keyboard.isPressed(KEY_LEFT)) {
 		player.move(- playerDx);
-		break;
-		case KEY_RIGHT:
+	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(playerDx);
-		break;
-		case KEY_SPACE:
+	}
+	
+	if (keyboard.isPressed(KEY_SPACE)) {
 		if (!scene.gameRunning()) {
 			// start a new game
 			int invadersRow = 3;
@@ -157,6 +163,15 @@ void keyPressed() {
 			// make player shot
 			player.shot();
 		}
-		break;
 	}
+}
+
+void keyPressed() {
+	// add pressed key to keyboard event store
+	keyboard.keyPressed(keyCode);
+}
+
+void keyReleased() {
+	// add pressed key to keyboard event store
+	keyboard.keyReleased(keyCode);
 }
