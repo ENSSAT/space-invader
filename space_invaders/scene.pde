@@ -21,7 +21,9 @@ class Scene extends Drawable{
 	int width, height;
 	ArrayList<Drawable> items;
 	Earth earth;
-	boolean gameOver = false;
+	boolean isGameOver = false;
+	String gameOverMessage = "";
+	ArrayList<Shot> shots;
 	
 	Scene(int width, int height) {
 		this.width = width;
@@ -29,22 +31,36 @@ class Scene extends Drawable{
 		this.reset();
 	}
 	
+	void gameOver(String message) {
+		println("Set game over message" + message);
+		this.gameOverMessage = message;
+		this.isGameOver = true;
+	}
+	
 	void clear() {
 		this.items = new ArrayList();
+		this.shots = new ArrayList();
 		// TODO: refactoring, shouldn't be in the scene
-		this.gameOver = false;
+		this.isGameOver = false;
+	}
+	
+	void addShot(Shot shot) {
+		this.shots.add(shot);
+	}
+	
+	void removeShot(Shot shot) {
+		this.shots.remove(shot);
 	}
 	
 	void reset() {
 		this.clear();
-		items = new ArrayList();
 		// create earth and add it to the scene
 		this.earth = new Earth(this);
 		this.add(this.earth);
 	}
 	
 	boolean gameRunning() {
-		return !this.gameOver;
+		return !this.isGameOver;
 	}
 	
 	int getPlayerSize() {
@@ -68,11 +84,17 @@ class Scene extends Drawable{
 	*/
 	void draw() {
 		background(0);
+		
 		for (int i = 0; i < items.size(); i++) {
 			items.get(i).draw();
 		}
 		
-		if (gameOver) {
+		// draw shots
+		for (int i = 0; i < shots.size(); i++) {
+			shots.get(i).draw();
+		}
+		
+		if (isGameOver) {
 			int titleWidth = int(0.8 * this.width * 0.1);
 			int halfWidth = int(this.width / 2);
 			int halfHeight = int(0.5 * this.earth.earthOffset);
@@ -80,7 +102,7 @@ class Scene extends Drawable{
 			
 			textSize(int(titleWidth * 0.3));
 			textAlign(LEFT);
-			text("Press[Space] to try again...", 0, int(titleWidth * 0.3));
+			text("Press[Space] to play a new game...", 0, int(titleWidth * 0.3));
 			
 			textAlign(CENTER);
 			
@@ -89,12 +111,12 @@ class Scene extends Drawable{
 			fill(0, 0, 0);
 			for (int x =- borderWidth; x < borderWidth + 1; x++) {
 				for (int y =- borderWidth; y < borderWidth + 1; y++) {
-					text("Aliens reached earth...\nGame over!", halfWidth - x, halfHeight - y);
+					text(this.gameOverMessage + "\nGame over!", halfWidth - x, halfHeight - y);
 				}
 			}
 			
 			fill(255, 255, 255);
-			text("Aliens reached earth...\nGame over!", halfWidth, halfHeight);
+			text(this.gameOverMessage + "\nGame over!", halfWidth, halfHeight);
 		}
 	}
 }
