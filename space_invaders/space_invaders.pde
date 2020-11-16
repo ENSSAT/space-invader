@@ -125,10 +125,15 @@ void draw() {
 		}
 	}
 	
-	//
+	// move invaders down when they reached sides of the scene
 	for (int k = 0; k < scene.invaders.size(); k++) {
 		invader = scene.invaders.get(k);
 		invader.move(invadersDx, borderReached ? invadersDy : 0);
+	}
+
+	// if no invaders remains, game is finished
+	if(scene.invaders.size() == 0){
+		scene.gameOver("You win!");
 	}
 }
 
