@@ -31,6 +31,10 @@ class Entity extends Drawable{
 		this.y1 += dy;
 	}
 	
+	boolean canMove(int dx) {
+		return this.x0 + dx > 0 && this.x1 + dx < this.scene.width;
+	}
+	
 	boolean contains(int x, int y) {
 		return this.x0 <= x && this.x1 >= x && this.y0 <= y && this.y1 >= y;
 	}
@@ -52,5 +56,22 @@ class Player extends Entity{
 			);
 	}
 	
-	
+	void move(int dx) {
+		// prevent player from moving out of the scene
+		if (super.canMove(dx)) {
+			super.move(dx, 0);
+		}
+	}
+}
+
+class Invader extends Entity{  
+	Invader(Scene scene, int col, int row, int size, PImage sprite) {
+		super(
+			scene,
+			int((col + 0.5) * size),
+			int((row + 0.5) * size),
+			size,
+			sprite
+			);
+	}
 }
