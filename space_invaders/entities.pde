@@ -9,15 +9,37 @@ class Shot extends Drawable{
 	int y0, dy;
 	// actual coordinates
 	int x, y1;
+	// identify targets that this shots can't hurt
+	int group;
 	//
 	Scene scene;
 	
-	Shot(Scene scene, int x, int y, int dy) {
+	Shot(Scene scene, int group, int x, int y, int dy) {
+		this.scene = scene;
+		scene.addShot(this);
+		
+		this.group = group;
+		
 		this.x = x;
 		this.y0 = y;
 		this.y1 = y;
 		this.dy = dy;
-		this.scene = scene;
+	}
+	
+	void destroy() {
+		scene.removeShot(this);
+	}
+	
+	boolean hurt(Entity entity) {
+		// return true if shot hit the target,
+		// and target is vulnerable to this shot.
+		boolean isHurt = entity.contains(this.x, this.y1) && !entity.hasGroup(this.group);
+		if (isHurt) {
+			println("hurt!");
+		} else{
+			println("not hurt");
+		}
+		return isHurt;
 	}
 	
 	boolean move() {
@@ -46,8 +68,8 @@ class Shot extends Drawable{
 
 
 class Laser extends Shot{
-	Laser(Scene scene, int x, int y, int dy) {
-		super(scene, x, y, dy);
+	Laser(Scene scene, int group, int x, int y, int dy) {
+		super(scene, group, x, y, dy);
 	}
 	void draw() {
 		int clr = 0xFFFF0000;
@@ -69,10 +91,12 @@ class Entity extends Drawable{
 	PImage sprite;
 	// scene containing this entity
 	Scene scene;
+	// defines a class of vulnerability
+	int group;
 	
-	Entity(Scene scene, int x, int y, int size, PImage sprite) {
+	Entity(Scene scene, int group, int x, int y, int size, PImage sprite) {
 		this.scene = scene;
-		this.scene.add(this);
+		this.group = group;
 		
 		this.x = x;
 		this.y = y;
@@ -86,6 +110,10 @@ class Entity extends Drawable{
 		
 		this.sprite = sprite;
 		this.sprite.resize(size, size);
+	}
+	
+	boolean hasGroup(int group) {
+		return this.group == group;
 	}
 	
 	void move(int dx, int dy) {
@@ -115,11 +143,13 @@ class Player extends Entity{
 	Player(Scene scene) {
 		super(
 			scene,
+			GROUP_PLAYER,
 			int(scene.width / 2), 
 			scene.height - int(scene.getPlayerSize() / 2),
 			scene.getPlayerSize(),
 			loadImage("player.png")
 			);
+		scene.add(this);
 	}
 	
 	void move(int dx) {
@@ -134,11 +164,13 @@ class Invader extends Entity{
 	Invader(Scene scene, int col, int row, int size, PImage sprite) {
 		super(
 			scene,
+			GROUP_INVADERS,
 			int((col + 0.5) * size),
 			int((row + 0.5) * size),
 			size,
 			sprite
 			);
+		scene.addInvader(this);
 	}
 	
 	boolean earthReached() {
