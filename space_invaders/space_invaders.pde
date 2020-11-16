@@ -1,6 +1,7 @@
 //
 Scene scene;
 Player player;
+ArrayList<Invader> invaders;
 
 HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 	HashMap<Integer, PImage> sprites = new HashMap();
@@ -23,25 +24,24 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	
 	// create scene items
 	player = new Player(scene);
-	//invaders = new ArrayList();
+	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
-			new Invader(scene, j, i, invadersSize, invadersSprites.get(i));
+	  invaders.add(
+	  			new Invader(scene, j, i, invadersSize, invadersSprites.get(i))
+	 );
 		}
 	}
 	
-	// TODO: remove this test
-	new Shot(scene, GROUP_INVADERS, 500, 50, 2);
+	invaders.get(0).shot();
 }
 
 void settings() {
 	// game configuration
 	int sceneWidth = 1000;
 	int sceneHeight = 800;
-	int invadersRow = 3;
-	int invadersCols = 4;
 	
 	// initialize a new game
 	size(sceneWidth, sceneHeight);
@@ -100,11 +100,28 @@ void draw() {
 	// move each shot to the next step
 	for (int k = 0; k < scene.shots.size(); k++) {
 		Shot shot = scene.shots.get(k);
-		shot.move();
-		
-		if (shot.hurt(player)) {
-			scene.gameOver("You were killed!\nGame over");
+
+		// try to move a shot, or destroy instance if it reached border
+		if(!shot.move()){
+			shot.destroy();
 			break;
+		}
+		
+		if (shot.entity.hasGroup(GROUP_INVADERS)) {
+			// if shot was initiated by an invader, test it against player
+			if (shot.hurt(player)) {
+				scene.gameOver("You were killed!\nGame over");
+				break;
+			}
+		}else if(shot.entity.hasGroup(GROUP_PLAYER)){
+			// if shot was initiated by a player, test it against invaders
+			for (int l = 0; l < scene.invaders.size(); l++) {
+				invader = scene.invaders.get(l);
+				if(shot.hurt(invader)){
+					invader.destroy();
+					shot.destroy();
+				}
+			}
 		}
 	}
 	
@@ -131,10 +148,9 @@ void keyPressed() {
 			int invadersRow = 3;
 			int invadersCols = 4;
 			newGame(scene, invadersRow, invadersCols);
-		} if (player.canShot()) {
+		} else if (player.canShot()) {
 			// make player shot
 			player.shot();
-			//new Laser(scene, GROUP_PLAYER, this.player.x, this.scene.earth.earthOffset + int(0.2 * this.player.size), - 8);
 		}
 		break;
 	}
