@@ -4,10 +4,51 @@ abstract class Drawable{
 }
 
 
+class Shot extends Drawable{
+	// initial coordinates
+	int y0, dy;
+	// actual coordinates
+	int x, y1;
+	//
+	Scene scene;
+	
+	Shot(Scene scene, int x, int y, int dy) {
+		this.x = x;
+		this.y0 = y;
+		this.y1 = y;
+		this.dy = dy;
+		this.scene = scene;
+	}
+	
+	boolean move() {
+		// return true if it moved, false otherwise
+		boolean move = this.canMove();
+		if (move) {
+			y1 += dy;
+		}
+		return move;
+	}
+	
+	boolean canMove() {
+		return y1 > 0 && y1 < scene.height;
+	}
+	
+	void draw() {
+		stroke(0xFFCCFFAA);
+		strokeWeight(4);
+		circle(x, y1, 15);
+	}
+}
+
+
 class Entity extends Drawable{
+	// coordinates of the center
+	int x, y;
 	// coordinates of the hitbox
 	int x0, y0, x1, y1;
+	// texture of the entity
 	PImage sprite;
+	// scene containing this entity
 	Scene scene;
 	
 	Entity(Scene scene, int x, int y, int size, PImage sprite) {
@@ -15,6 +56,8 @@ class Entity extends Drawable{
 		this.scene.add(this);
 		
 		int half = int(size / 2);
+		this.x = x;
+		this.y = y;
 		this.x0 = x - half;
 		this.y0 = y - half;
 		this.x1 = x + half;
@@ -25,6 +68,8 @@ class Entity extends Drawable{
 	}
 	
 	void move(int dx, int dy) {
+		this.x += dx;
+		this.y += dy;
 		this.x0 += dx;
 		this.x1 += dx;
 		this.y0 += dy;

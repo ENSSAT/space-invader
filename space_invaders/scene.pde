@@ -14,7 +14,9 @@ class Earth extends Drawable{
 	}
 }
 
-
+/**
+* Store drawable objects
+*/
 class Scene extends Drawable{
 	int width, height;
 	ArrayList<Drawable> items;
@@ -55,6 +57,10 @@ class Scene extends Drawable{
 	**/
 	void add(Drawable item) {
 		items.add(item);
+	}
+	
+	void remove(Drawable item) {
+		items.remove(item);
 	}
 	
 	/**
