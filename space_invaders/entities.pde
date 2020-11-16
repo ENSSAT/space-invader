@@ -10,15 +10,15 @@ class Shot extends Drawable{
 	// actual coordinates
 	int x, y1;
 	// identify targets that this shots can't hurt
-	int group;
+	Entity entity;
 	//
 	Scene scene;
 	
-	Shot(Scene scene, int group, int x, int y, int dy) {
+	Shot(Scene scene, Entity entity, int x, int y, int dy) {
 		this.scene = scene;
 		scene.addShot(this);
 		
-		this.group = group;
+		this.entity = entity;
 		
 		this.x = x;
 		this.y0 = y;
@@ -27,18 +27,15 @@ class Shot extends Drawable{
 	}
 	
 	void destroy() {
+		println("shot destroyed");
 		scene.removeShot(this);
+		this.entity.onShotDestroyed();
 	}
 	
 	boolean hurt(Entity entity) {
 		// return true if shot hit the target,
 		// and target is vulnerable to this shot.
-		boolean isHurt = entity.contains(this.x, this.y1) && !entity.hasGroup(this.group);
-		if (isHurt) {
-			println("hurt!");
-		} else{
-			println("not hurt");
-		}
+		boolean isHurt = entity.contains(this.x, this.y1) && !entity.hasGroup(this.entity.group);
 		return isHurt;
 	}
 	
@@ -49,6 +46,8 @@ class Shot extends Drawable{
 			y1 += dy;
 		} else {
 			scene.remove(this);
+			entity.onShotDestroyed();
+			
 		}
 		return move;
 	}
@@ -68,9 +67,10 @@ class Shot extends Drawable{
 
 
 class Laser extends Shot{
-	Laser(Scene scene, int group, int x, int y, int dy) {
-		super(scene, group, x, y, dy);
+	Laser(Scene scene, Entity entity, int x, int y, int dy) {
+		super(scene, entity, x, y, dy);
 	}
+	
 	void draw() {
 		int clr = 0xFFFF0000;
 		fill(clr);
@@ -82,7 +82,7 @@ class Laser extends Shot{
 }
 
 
-class Entity extends Drawable{
+abstract class Entity extends Drawable{
 	// coordinates of the center
 	int x, y, size;
 	// coordinates of the hitbox
@@ -93,6 +93,8 @@ class Entity extends Drawable{
 	Scene scene;
 	// defines a class of vulnerability
 	int group;
+	// reference shot of this entity
+	Shot shotInstance = null;
 	
 	Entity(Scene scene, int group, int x, int y, int size, PImage sprite) {
 		this.scene = scene;
@@ -110,6 +112,18 @@ class Entity extends Drawable{
 		
 		this.sprite = sprite;
 		this.sprite.resize(size, size);
+	}
+	
+	abstract void destroy();
+	
+	abstract void shot();
+	
+	boolean canShot() {
+		return this.shotInstance == null;
+	}
+	
+	void onShotDestroyed() {
+		this.shotInstance = null;
 	}
 	
 	boolean hasGroup(int group) {
@@ -152,6 +166,21 @@ class Player extends Entity{
 		scene.add(this);
 	}
 	
+	void destroy() {
+		// nothing append when player is destroyed
+	}
+	
+	void shot() {
+		if (this.canShot()) {
+			this.shotInstance = new Laser(
+				scene, 
+				this, 
+				this.x, 
+				this.scene.earth.earthOffset + int(0.2 * this.size), 
+				 - 	8);
+		}
+	}
+	
 	void move(int dx) {
 		// prevent player from moving out of the scene
 		if (super.canMove(dx)) {
@@ -162,7 +191,7 @@ class Player extends Entity{
 
 class Invader extends Entity{  
 	Invader(Scene scene, int col, int row, int size, PImage sprite) {
-		super(
+		super(//new Shot(scene, GROUP_INVADERS, 500, 50, 2);
 			scene,
 			GROUP_INVADERS,
 			int((col + 0.5) * size),
@@ -171,6 +200,22 @@ class Invader extends Entity{
 			sprite
 			);
 		scene.addInvader(this);
+	}
+	
+	void destroy() {
+		// nothing append when player is destroyed
+		this.scene.removeInvader(this);
+	}
+	
+	void shot() {
+		if (this.canShot()) {
+			this.shotInstance = new Shot(
+				scene, 
+				this, 
+				this.x, 
+				this.y - int(0.2 * this.size), 
+				2);
+		}
 	}
 	
 	boolean earthReached() {
