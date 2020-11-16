@@ -18,7 +18,7 @@ class Entity extends Drawable{
 		this.x0 = x - half;
 		this.y0 = y - half;
 		this.x1 = x + half;
-		this.y1 = x + half;
+		this.y1 = y + half;
 		
 		this.sprite = sprite;
 		this.sprite.resize(size, size);
@@ -73,5 +73,9 @@ class Invader extends Entity{
 			size,
 			sprite
 			);
+	}
+	
+	boolean earthReached() {
+		return this.y1 > this.scene.earth.earthOffset;
 	}
 }
