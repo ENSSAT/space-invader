@@ -8,6 +8,11 @@ class Point{
 		this.x = x;
 		this.y = y;
 	}
+	
+	void translate(int dx, int dy) {
+		this.x += dx;
+		this.y += dy;
+	}
 }
 
 
@@ -19,6 +24,7 @@ class Hitbox{
 	int x0, y0, x1, y1;
 	
 	Hitbox(Scene scene, int x0, int y0, int x1, int y1) {
+		this.scene = scene;
 		this.x0 = x0;
 		this.y0 = y0;
 		this.x1 = x1;
@@ -37,8 +43,8 @@ class Hitbox{
 	* this hitbox go out of the screen.
 	*/
 	boolean canMove(int dx, int dy) {
-		return 0 <= this.x0 && this.x1 <= this.scene.width
-	        && 0 <= this.y0 && this.y1 <= this.scene.height;
+		return 0 <= this.x0 + dx && this.x1 + dx <= this.scene.width
+		 && 0 <= this.y0 + dy && this.y1 + dy <= this.scene.height;
 	}
 	
 	/**
@@ -46,11 +52,13 @@ class Hitbox{
 	* Return true if it moved, false otherwise.
 	*/
 	boolean move(int dx, int dy) {
-		if (canMove(dx, dy)) {
+		boolean moved = canMove(dx, dy);
+		if (moved) {
 			this.x0 += dx;
 			this.y0 += dy;
 			this.x1 += dx;
 			this.y1 += dy;
 		}
+		return moved;
 	}
 }
