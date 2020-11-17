@@ -1,122 +1,41 @@
 
-abstract class Drawable{
-	abstract void draw();
-}
-
-
-class Shot extends Drawable{
-	// initial coordinates
-	int y0, dy;
-	// actual coordinates
-	int x, y1;
-	// identify targets that this shots can't hurt
-	Entity entity;
-	//
-	Scene scene;
-	
-	Shot(Scene scene, Entity entity, int x, int y, int dy) {
-		this.scene = scene;
-		scene.addShot(this);
-		
-		this.entity = entity;
-		
-		this.x = x;
-		this.y0 = y;
-		this.y1 = y;
-		this.dy = dy;
-	}
-	
-	void destroy() {
-		println("shot destroyed");
-		scene.removeShot(this);
-		this.entity.onShotDestroyed();
-	}
-	
-	boolean hurt(Entity entity) {
-		// return true if shot hit the target,
-		// and target is vulnerable to this shot.
-		boolean isHurt = entity.contains(this.x, this.y1) && !entity.hasGroup(this.entity.group);
-		return isHurt;
-	}
-	
-	boolean move() {
-		// return true if it moved, false otherwise
-		boolean move = this.canMove();
-		if (move) {
-			y1 += dy;
-		} else {
-			scene.remove(this);
-			entity.onShotDestroyed();
-			
-		}
-		return move;
-	}
-	
-	boolean canMove() {
-		return y1 > 0 && y1 < scene.height;
-	}
-	
-	void draw() {
-		int clr = 0xFFFF0000;
-		fill(clr);
-		stroke(clr);
-		strokeWeight(4);
-		circle(x, y1, 15);
-	}
-}
-
-
-class Laser extends Shot{
-	Laser(Scene scene, Entity entity, int x, int y, int dy) {
-		super(scene, entity, x, y, dy);
-	}
-	
-	void draw() {
-		int clr = 0xFFFF0000;
-		fill(clr);
-		stroke(clr);
-		strokeWeight(4);
-		rect(x - 7, y0, 15, y1 - y0);
-		circle(x, y1, 15);
-	}
-}
-
-
-abstract class Entity extends Drawable{
-	// coordinates of the center
-	int x, y, size;
-	// coordinates of the hitbox
-	int x0, y0, x1, y1;
-	// texture of the entity
-	PImage sprite;
-	// scene containing this entity
-	Scene scene;
-	// defines a class of vulnerability
+abstract class Entity extends Moveable{
 	int group;
-	// reference shot of this entity
+	int size;
+	PImage sprite;
+	
 	Shot shotInstance = null;
 	
 	Entity(Scene scene, int group, int x, int y, int size, PImage sprite) {
-		this.scene = scene;
+		super(
+			scene, 
+			new Hitbox(
+			scene,
+			x - int(size / 2),
+			y - int(size / 2),
+			x + int(size / 2),
+			y + int(size / 2)
+			), 
+			new Point(x, y)
+			);
+		
 		this.group = group;
-		
-		this.x = x;
-		this.y = y;
 		this.size = size;
-		
-		int half = int(size / 2);
-		this.x0 = x - half;
-		this.y0 = y - half;
-		this.x1 = x + half;
-		this.y1 = y + half;
-		
 		this.sprite = sprite;
 		this.sprite.resize(size, size);
+	}
+	
+	void draw() {
+		image(this.sprite, this.hitbox.x0, this.hitbox.y0);
 	}
 	
 	abstract void destroy();
 	
 	abstract void shot();
+	
+	boolean canMove(int dx) {
+		return super.canMove(dx, 0);
+	}
 	
 	boolean canShot() {
 		return this.shotInstance == null;
@@ -128,27 +47,6 @@ abstract class Entity extends Drawable{
 	
 	boolean hasGroup(int group) {
 		return this.group == group;
-	}
-	
-	void move(int dx, int dy) {
-		this.x += dx;
-		this.y += dy;
-		this.x0 += dx;
-		this.x1 += dx;
-		this.y0 += dy;
-		this.y1 += dy;
-	}
-	
-	boolean canMove(int dx) {
-		return this.x0 + dx > 0 && this.x1 + dx < this.scene.width;
-	}
-	
-	boolean contains(int x, int y) {
-		return this.x0 <= x && this.x1 >= x && this.y0 <= y && this.y1 >= y;
-	}
-	
-	void draw() {
-		image(this.sprite, this.x0, this.y0);
 	}
 }
 
@@ -170,26 +68,26 @@ class Player extends Entity{
 		// nothing append when player is destroyed
 	}
 	
+	boolean move(int dx) {
+		return super.move(dx, 0);
+	}
+	
 	void shot() {
 		if (this.canShot()) {
 			this.shotInstance = new Laser(
 				scene, 
 				this, 
-				this.x, 
-				this.scene.earth.earthOffset + int(0.2 * this.size), 
-				 - 	8);
-		}
-	}
-	
-	void move(int dx) {
-		// prevent player from moving out of the scene
-		if (super.canMove(dx)) {
-			super.move(dx, 0);
+				new Point(
+				this.center.x,
+				this.scene.earth.earthOffset + int(0.2 * this.size)
+				), 
+				DIRECTION_UP
+				);
 		}
 	}
 }
 
-class Invader extends Entity{  
+class Invader extends Entity{
 	Invader(Scene scene, int col, int row, int size, PImage sprite) {
 		super(//new Shot(scene, GROUP_INVADERS, 500, 50, 2);
 			scene,
@@ -208,17 +106,19 @@ class Invader extends Entity{
 	}
 	
 	void shot() {
-		if (this.canShot()) {
-			this.shotInstance = new Shot(
+		if (this.canShot()) {			
+			this.shotInstance = new Bullet(
 				scene, 
-				this, 
-				this.x, 
-				this.y - int(0.2 * this.size), 
-				2);
+				this,
+				new Point(
+				this.center.x, 
+				this.hitbox.y1
+				),
+				DIRECTION_DOWN);
 		}
 	}
 	
 	boolean earthReached() {
-		return this.y1 > this.scene.earth.earthOffset;
+		return this.hitbox.y1 > this.scene.earth.earthOffset;
 	}
 }
