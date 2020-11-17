@@ -181,7 +181,7 @@ void draw() {
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move(- PLAYER_DX);
+		player.move( - PLAYER_DX);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(PLAYER_DX);
 	}
