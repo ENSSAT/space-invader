@@ -19,4 +19,6 @@ final int LASER_RADIUS = 10;
 final int LASER_VELOCITY = 8;
 
 // colors
+final int COLOR_WHITE = 0xFFFFFFFF;
 final int COLOR_RED = 0xFFFF0000;
+final int COLOR_BLACK = 0xFF000000;
