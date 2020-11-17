@@ -19,6 +19,7 @@ HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// reset locks
 	scene.reset();
+	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	
 	// load textures
 	int invadersSize = int(0.1 * scene.width);
@@ -37,7 +38,9 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 		}
 	}
 	
-	// make the first invader shot... invaders.get(0).shot();
+	// make the first invader shot... 
+	//invaders.get(0).shot();
+	//invaders.get(1).shot();
 }
 
 void settings() {	
@@ -69,6 +72,15 @@ void draw() {
 	if (scene.isGameOver) {
 		// update the scene to reflect previous changes...
 		return;
+	}
+	
+	int index;
+	int n = INVADER_MAX_SIMULTANEOUS_SHOTS - INVADERS_SIMULTANEOUS_SHOTS;
+	
+	for (int k = 0; k < n; k++) {
+		index = int(random(invaders.size()));
+		invaders.get(index).shot();
+		println("in the loop");
 	}
 	
 	Invader invader;

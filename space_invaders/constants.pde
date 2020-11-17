@@ -12,6 +12,7 @@ final int DIRECTION_DOWN = 1;
 final int DIRECTION_UP = - 1;
 
 // shots constants
+final int INVADER_MAX_SIMULTANEOUS_SHOTS = 2;
 final int BULLET_RADIUS = 10;
 final int BULLET_VELOCITY = 3;
 

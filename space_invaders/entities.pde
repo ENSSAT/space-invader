@@ -31,7 +31,11 @@ abstract class Entity extends Moveable{
 	
 	abstract void destroy();
 	
-	abstract void shot();
+	void shot(Shot shotInstance) {
+		if (this.canShot()) {
+			this.shotInstance = shotInstance;
+		}
+	}
 	
 	boolean canMove(int dx) {
 		return super.canMove(dx, 0);
@@ -73,23 +77,25 @@ class Player extends Entity{
 	}
 	
 	void shot() {
-		if (this.canShot()) {
-			this.shotInstance = new Laser(
-				scene, 
-				this, 
-				new Point(
-				this.center.x,
-				this.scene.earth.earthOffset + int(0.2 * this.size)
-				), 
-				DIRECTION_UP
-				);
-		}
+		super.shot(
+			new Laser(
+			scene, 
+			this, 
+			new Point(
+			this.center.x,
+			this.scene.earth.earthOffset + int(0.2 * this.size)
+			), 
+			DIRECTION_UP
+			)
+			);
 	}
 }
 
-class Invader extends Entity{
+int INVADERS_SIMULTANEOUS_SHOTS = 0;
+
+class Invader extends Entity{	
 	Invader(Scene scene, int col, int row, int size, PImage sprite) {
-		super(//new Shot(scene, GROUP_INVADERS, 500, 50, 2);
+		super(
 			scene,
 			GROUP_INVADERS,
 			int((col + 0.5) * size),
@@ -105,17 +111,24 @@ class Invader extends Entity{
 		this.scene.removeInvader(this);
 	}
 	
+	void onShotDestroyed() {
+		println("onShotDestroyed");
+		super.onShotDestroyed();
+		INVADERS_SIMULTANEOUS_SHOTS -= 1;
+	}
+	
 	void shot() {
-		if (this.canShot()) {			
-			this.shotInstance = new Bullet(
-				scene, 
-				this,
-				new Point(
-				this.center.x, 
-				this.hitbox.y1
-				),
-				DIRECTION_DOWN);
-		}
+		super.shot(			
+			new Bullet(
+			scene, 
+			this,
+			new Point(
+			this.center.x, 
+			this.hitbox.y1
+			),
+			DIRECTION_DOWN)
+			);
+		INVADERS_SIMULTANEOUS_SHOTS += 1;
 	}
 	
 	boolean earthReached() {
