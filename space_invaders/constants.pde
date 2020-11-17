@@ -11,7 +11,7 @@ final int GROUP_PLAYER = 2;
 final int DIRECTION_DOWN = 1;
 final int DIRECTION_UP = - 1;
 final int DIRECTION_RIGHT = 1;
-final int DIRECTION_LEFT = -1;
+final int DIRECTION_LEFT = - 1;
 
 // shots constants
 final int INVADER_MAX_SIMULTANEOUS_SHOTS = 2;

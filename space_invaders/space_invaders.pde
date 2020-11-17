@@ -25,7 +25,7 @@ HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// reset locks
 	scene.reset();
-
+	
 	// restore settings
 	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	INVADERS_DX = theme.getVelocity("invader");
@@ -39,11 +39,11 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// add target to the scene
 	Target target = new Target(scene, theme.getTargetSprite());
 	scene.setTarget(target);
-
+	
 	// add player to the scene
 	player = new Player(scene, theme.getPlayerSprite());
 	scene.setPlayer(player);
-
+	
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
@@ -66,14 +66,14 @@ void settings() {
 	
 	// initialize a new game
 	size(sceneWidth, sceneHeight);
-
+	
 	// instanciate theme
 	scene = new Scene(sceneWidth, sceneHeight);
-
+	
 	// load one of the themes
 	theme = new Theme("theme_frog");
 	scene.setTheme(theme);
-
+	
 	// stop game with welcome message
 	scene.gameOver("Welcome back!");
 }
@@ -181,7 +181,7 @@ void draw() {
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move( - PLAYER_DX);
+		player.move(- PLAYER_DX);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(PLAYER_DX);
 	}
