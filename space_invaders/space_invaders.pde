@@ -19,30 +19,29 @@ HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// reset locks
 	scene.reset();
+	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	
 	// load textures
-	int invadersSize = int(0.1 * scene.width);
-	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(invadersSize);
+	int charactersSize = 80;
+	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(charactersSize);
 	
 	// create scene items
-	player = new Player(scene);
+	player = new Player(scene, loadImage("player.png"));
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
 			invaders.add(
-				new Invader(scene, j, i, invadersSize, invadersSprites.get(i))
+				new Invader(scene, j, i, charactersSize, invadersSprites.get(i))
 				);
 		}
 	}
-	
-	// make the first invader shot... invaders.get(0).shot();
 }
 
 void settings() {	
 	// game configuration
-	int sceneWidth = 1000;
+	int sceneWidth = 1500;
 	int sceneHeight = 800;
 	
 	// initialize a map containing pressed keys
@@ -69,6 +68,14 @@ void draw() {
 	if (scene.isGameOver) {
 		// update the scene to reflect previous changes...
 		return;
+	}
+	
+	int index;
+	int n = INVADER_MAX_SIMULTANEOUS_SHOTS - INVADERS_SIMULTANEOUS_SHOTS;
+	
+	for (int k = 0; k < n; k++) {
+		index = int(random(invaders.size()));
+		invaders.get(index).shot();
 	}
 	
 	Invader invader;
@@ -116,6 +123,7 @@ void draw() {
 		if (shot.entity.hasGroup(GROUP_INVADERS)) {
 			// if shot was initiated by an invader, test it against player
 			if (shot.hurt(player)) {
+				player.isAlive = false;
 				scene.gameOver("You were killed!\nGame over");
 				break;
 			}
@@ -124,6 +132,7 @@ void draw() {
 			for (int l = 0; l < scene.invaders.size(); l++) {
 				invader = scene.invaders.get(l);
 				if (shot.hurt(invader)) {
+					invader.isAlive = false;
 					invader.destroy();
 					shot.destroy();
 				}

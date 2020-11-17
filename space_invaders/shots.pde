@@ -5,6 +5,8 @@ abstract class Shot extends Moveable{
 	int clr;
 	int dy;
 	
+	boolean destroyed;
+	
 	Shot(Scene scene, Entity entity, Point center, int r, int clr, int dy) {
 		// By default, shots are circles of radius r with a squared hitbox...
 		super(scene, new Hitbox(scene, center.x - r, center.y - r, center.x + r, center.y + r), center);
@@ -17,6 +19,7 @@ abstract class Shot extends Moveable{
 		this.clr = clr;
 		// velocity on y axis
 		this.dy = dy;
+		boolean destroyed = false;
 	}
 	
 	void draw() {
@@ -26,8 +29,11 @@ abstract class Shot extends Moveable{
 	}
 	
 	void destroy() {
-		scene.removeShot(this);
-		this.entity.onShotDestroyed();
+		if (!destroyed) {
+			scene.removeShot(this);
+			this.entity.onShotDestroyed();
+		    this.destroyed = true;
+		}
 	}
 	
 	/**
