@@ -1,83 +1,102 @@
 
+/**
+* Parent class of any game object.
+*/
 abstract class Drawable{
+	Scene scene;
+	Hitbox hitbox;
+	Point center;
+	
+	Drawable(Scene scene, Hitbox hitbox, Point center) {
+		this.scene = scene;
+		this.hitbox = hitbox;
+		this.center = center;
+	}
+	
+	// called when object must be drawn
 	abstract void draw();
+	
+	// called when object must be destroyed
+	abstract void destroy();
+	
+	//
+	boolean move(int dx, int dy) {
+		return this.hitbox.move(dx, dy);
+	}
 }
 
 
-class Shot extends Drawable{
-	// initial coordinates
-	int y0, dy;
-	// actual coordinates
-	int x, y1;
-	// identify targets that this shots can't hurt
+abstract class Shot extends Drawable{
 	Entity entity;
-	//
-	Scene scene;
+	Point center;
+	int radius;
+	int clr;
+	int dy;
 	
-	Shot(Scene scene, Entity entity, int x, int y, int dy) {
-		this.scene = scene;
+	Shot(Scene scene, Entity entity, Point center, int r, int clr, int dy) {
+		// By default, shots are circles of radius r with a squared hitbox...
+		super(scene, new Hitbox(scene, center.x - r, center.y - r, center.x + r, center.y + r), center);
 		scene.addShot(this);
-		
+		// entity who initiated this shot
 		this.entity = entity;
-		
-		this.x = x;
-		this.y0 = y;
-		this.y1 = y;
+		// details of the munition
+		this.center = center;
+		this.radius = r;
+		this.clr = clr;
+		// velocity on y axis
 		this.dy = dy;
 	}
 	
+	void draw() {
+		fill(this.clr);
+		stroke(this.clr);
+		circle(center.x, center.y, radius);
+	}
+	
 	void destroy() {
-		println("shot destroyed");
 		scene.removeShot(this);
 		this.entity.onShotDestroyed();
 	}
 	
+	/**
+	* Return true if entity is hurt, false otherwise.
+	* If hurt, entity loose a lifepoint!
+	*/
 	boolean hurt(Entity entity) {
-		// return true if shot hit the target,
-		// and target is vulnerable to this shot.
-		boolean isHurt = entity.contains(this.x, this.y1) && !entity.hasGroup(this.entity.group);
+		boolean isHurt = entity.hitbox.contains(center.x, center.y) && !entity.hasGroup(this.entity.group);
 		return isHurt;
 	}
 	
+	/**
+	* Move the shot, or destroy it if it reached border.
+	*/
 	boolean move() {
-		// return true if it moved, false otherwise
-		boolean move = this.canMove();
-		if (move) {
-			y1 += dy;
-		} else {
-			scene.remove(this);
-			entity.onShotDestroyed();
-			
-		}
+		boolean move = super.move(0, dy);
+		if (!move) this.destroy();
 		return move;
 	}
-	
-	boolean canMove() {
-		return y1 > 0 && y1 < scene.height;
-	}
-	
-	void draw() {
-		int clr = 0xFFFF0000;
-		fill(clr);
-		stroke(clr);
-		strokeWeight(4);
-		circle(x, y1, 15);
+}
+
+
+class Bullet extends Shot{
+	Bullet(Scene scene, Entity entity, Point center, int dy) {
+		super(scene, entity, center, LASER_RADIUS, COLOR_RED, dy);
 	}
 }
 
 
 class Laser extends Shot{
-	Laser(Scene scene, Entity entity, int x, int y, int dy) {
-		super(scene, entity, x, y, dy);
+	// keep track of initial coordinates of the shot
+	Point initial;
+	
+	Laser(Scene scene, Entity entity, Point center, int dy) {
+		super(scene, entity, center, LASER_RADIUS, COLOR_RED, dy);
+		initial = new Point(center.x, center.y);
 	}
 	
 	void draw() {
-		int clr = 0xFFFF0000;
-		fill(clr);
-		stroke(clr);
-		strokeWeight(4);
-		rect(x - 7, y0, 15, y1 - y0);
-		circle(x, y1, 15);
+		super.draw();
+		rect(center.x - radius, initial.y, 2 * radius, center.y - initial.y);
 	}
 }
 
