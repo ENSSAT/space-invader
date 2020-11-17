@@ -48,10 +48,6 @@ abstract class Entity extends Moveable{
 	boolean hasGroup(int group) {
 		return this.group == group;
 	}
-	
-	boolean contains(int x, int y) {
-		return this.hitbox.contains(x, y);
-	}
 }
 
 
