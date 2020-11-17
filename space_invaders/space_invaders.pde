@@ -22,18 +22,18 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	
 	// load textures
-	int invadersSize = int(0.1 * scene.width);
-	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(invadersSize);
+	int charactersSize = 80;
+	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(charactersSize);
 	
 	// create scene items
-	player = new Player(scene);
+	player = new Player(scene, loadImage("player.png"));
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
 			invaders.add(
-				new Invader(scene, j, i, invadersSize, invadersSprites.get(i))
+				new Invader(scene, j, i, charactersSize, invadersSprites.get(i))
 				);
 		}
 	}
@@ -41,7 +41,7 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 
 void settings() {	
 	// game configuration
-	int sceneWidth = 1000;
+	int sceneWidth = 1500;
 	int sceneHeight = 800;
 	
 	// initialize a map containing pressed keys
@@ -123,6 +123,7 @@ void draw() {
 		if (shot.entity.hasGroup(GROUP_INVADERS)) {
 			// if shot was initiated by an invader, test it against player
 			if (shot.hurt(player)) {
+				player.isAlive = false;
 				scene.gameOver("You were killed!\nGame over");
 				break;
 			}
@@ -131,6 +132,7 @@ void draw() {
 			for (int l = 0; l < scene.invaders.size(); l++) {
 				invader = scene.invaders.get(l);
 				if (shot.hurt(invader)) {
+					invader.isAlive = false;
 					invader.destroy();
 					shot.destroy();
 				}
@@ -155,7 +157,7 @@ int playerDx = 5;
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move( - playerDx);
+		player.move(- playerDx);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(playerDx);
 	}

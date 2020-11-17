@@ -4,6 +4,7 @@ abstract class Entity extends Moveable{
 	int size;
 	PImage sprite;
 	
+	boolean isAlive = true;
 	Shot shotInstance = null;
 	
 	Entity(Scene scene, int group, int x, int y, int size, PImage sprite) {
@@ -34,15 +35,17 @@ abstract class Entity extends Moveable{
 	void shot(Shot shotInstance) {
 		if (this.canShot()) {
 			this.shotInstance = shotInstance;
+		} else{
+			shotInstance.destroy();
 		}
 	}
 	
 	boolean canMove(int dx) {
-		return super.canMove(dx, 0);
+		return super.canMove(dx, 0) && this.isAlive;
 	}
 	
 	boolean canShot() {
-		return this.shotInstance == null;
+		return this.shotInstance == null && this.isAlive;
 	}
 	
 	void onShotDestroyed() {
@@ -56,14 +59,14 @@ abstract class Entity extends Moveable{
 
 
 class Player extends Entity{
-	Player(Scene scene) {
+	Player(Scene scene, PImage sprite) {
 		super(
 			scene,
 			GROUP_PLAYER,
 			int(scene.width / 2), 
 			scene.height - int(scene.getPlayerSize() / 2),
 			scene.getPlayerSize(),
-			loadImage("player.png")
+			sprite
 			);
 		scene.add(this);
 	}
@@ -107,12 +110,10 @@ class Invader extends Entity{
 	}
 	
 	void destroy() {
-		// nothing append when player is destroyed
 		this.scene.removeInvader(this);
 	}
 	
 	void onShotDestroyed() {
-		println("onShotDestroyed");
 		super.onShotDestroyed();
 		INVADERS_SIMULTANEOUS_SHOTS -= 1;
 	}
