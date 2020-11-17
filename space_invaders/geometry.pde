@@ -13,11 +13,15 @@ class Point{
 		this.x += dx;
 		this.y += dy;
 	}
+	
+	String toString() {
+		return String.format("(Point : " + nf(x) + " " + nf(y) + ")");
+	}
 }
 
 
 /**
-* Concept modeling the bounds of an object.
+*Concept modeling the bounds of an object.
 */
 class Hitbox{
 	Scene scene;
@@ -35,7 +39,7 @@ class Hitbox{
 	* Determine wether a point belong to this hitbox
 	*/
 	boolean contains(int x, int y) {
-		return this.x0 >= x && x <= this.x1 && this.y0 >= y && y <= this.y1;
+		return(x0 <= x) && (y0 <= y) && (x <= x1) && (y <= y1);
 	}
 	
 	/**
@@ -60,5 +64,9 @@ class Hitbox{
 			this.y1 += dy;
 		}
 		return moved;
+	}
+	
+	String toString() {
+		return String.format("(Hitbox : " + nf(x0) + " " + nf(y0) + " " + nf(x1) + " " + nf(y1) + ")");
 	}
 }
