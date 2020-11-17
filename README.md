@@ -1,7 +1,7 @@
 
 # Space-Invader
 
-> Custom implementation of the space-invader game in [Processing](https://processing.org/) language.
+> Custom implementation of the space-invader game developed while learning the [Processing](https://processing.org/) language.
 
 ## Requirements
 
