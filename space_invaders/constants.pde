@@ -7,7 +7,7 @@ final int KEY_RIGHT = 39;
 final int GROUP_INVADERS = 1; 
 final int GROUP_PLAYER = 2;
 
-//
+// directions used for bullets
 final int DIRECTION_DOWN = 1;
 final int DIRECTION_UP = - 1;
 

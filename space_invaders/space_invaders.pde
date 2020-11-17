@@ -37,10 +37,6 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 				);
 		}
 	}
-	
-	// make the first invader shot... 
-	//invaders.get(0).shot();
-	//invaders.get(1).shot();
 }
 
 void settings() {	
@@ -80,7 +76,6 @@ void draw() {
 	for (int k = 0; k < n; k++) {
 		index = int(random(invaders.size()));
 		invaders.get(index).shot();
-		println("in the loop");
 	}
 	
 	Invader invader;
@@ -160,7 +155,7 @@ int playerDx = 5;
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move(- playerDx);
+		player.move( - playerDx);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(playerDx);
 	}
