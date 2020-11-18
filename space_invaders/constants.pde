@@ -10,14 +10,11 @@ final int GROUP_PLAYER = 2;
 // directions used for bullets
 final int DIRECTION_DOWN = 1;
 final int DIRECTION_UP = - 1;
+final int DIRECTION_RIGHT = 1;
+final int DIRECTION_LEFT = -1;
 
 // shots constants
 final int INVADER_MAX_SIMULTANEOUS_SHOTS = 2;
-final int BULLET_RADIUS = 10;
-final int BULLET_VELOCITY = 3;
-
-final int LASER_RADIUS = 10;
-final int LASER_VELOCITY = 8;
 
 // colors
 final int COLOR_WHITE = 0xFFFFFFFF;

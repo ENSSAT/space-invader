@@ -54,7 +54,7 @@ class Scene extends Drawable{
 	}
 	
 	void gameOver(String message) {
-		println("Set game over message" + message);
+		Logger.info(String.format("Game stopped with message '%s'", message).replaceAll("\\n"," "));
 		this.gameOverMessage = message;
 		this.isGameOver = true;
 	}
@@ -132,14 +132,14 @@ class Scene extends Drawable{
 			
 			textSize(titleWidth);
 			
-			fill(0, 0, 0);
+			fill(theme.getColor("background"));
 			for (int x =- borderWidth; x < borderWidth + 1; x++) {
 				for (int y =- borderWidth; y < borderWidth + 1; y++) {
 					text(this.gameOverMessage, halfWidth - x, halfHeight - y);
 				}
 			}
 			
-			fill(255, 255, 255);
+			fill(theme.getColor("text"));
 			text(this.gameOverMessage, halfWidth, halfHeight);
 			return;
 		}
