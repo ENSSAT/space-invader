@@ -1,9 +1,15 @@
-//
+// variable loaded from theme settings
+int INVADERS_DX;
+int PLAYER_DX;
+int BULLET_VELOCITY;
+int LASER_VELOCITY;
+
+// global scoped variables
 Scene scene;
 Player player;
 ArrayList<Invader> invaders;
 Keyboard keyboard;
-
+Theme theme;
 
 HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 	HashMap<Integer, PImage> sprites = new HashMap();
@@ -21,19 +27,31 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	scene.reset();
 	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	
+	// restore settings
+	INVADERS_SIMULTANEOUS_SHOTS = 0;
+	INVADERS_DX = theme.getVelocity("invader");
+	PLAYER_DX = theme.getVelocity("player");
+	BULLET_VELOCITY = scene.theme.getVelocity("bullet");
+	LASER_VELOCITY = scene.theme.getVelocity("laser");
+	
 	// load textures
 	int charactersSize = 80;
-	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(charactersSize);
 	
-	// create scene items
-	player = new Player(scene, loadImage("player.png"));
+	// add target to the scene
+	Target target = new Target(scene, theme.getTargetSprite());
+	scene.setTarget(target);
+	
+	// add player to the scene
+	player = new Player(scene, theme.getPlayerSprite());
+	scene.setPlayer(player);
+
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
 			invaders.add(
-				new Invader(scene, j, i, charactersSize, invadersSprites.get(i))
+				new Invader(scene, j, i, charactersSize, theme.getInvaderSprite(i))
 				);
 		}
 	}
@@ -49,11 +67,18 @@ void settings() {
 	
 	// initialize a new game
 	size(sceneWidth, sceneHeight);
+	
+	// instanciate theme
 	scene = new Scene(sceneWidth, sceneHeight);
+	
+	// load one of the themes
+	theme = new Theme("theme_frog");
+	scene.setTheme(theme);
+	
+	// stop game with welcome message
 	scene.gameOver("Welcome back!");
 }
 
-int invadersDx = - 2;
 int invadersDy = 50;
 
 // gameloop
@@ -86,27 +111,27 @@ void draw() {
 		invader = scene.invaders.get(k);
 		
 		// invaders reached border of the world
-		if (!invader.canMove(invadersDx)) {
+		if (!invader.canMove(INVADERS_DX)) {
 			borderReached = true;
 			break;
 		}
 		
-		// invaders reached earth
-		if (invader.earthReached()) {
-			scene.gameOver("Aliens reached earth...\nGame over!");
+		// invaders reached target
+		if (invader.targetReached()) {
+			scene.gameOver("Aliens reached target...\nGame over!");
 			break;
 		}
 	}
 	
 	// if invaders reached border of the world, change their speed's direction.
 	if (borderReached) {
-		invadersDx = - invadersDx;
+		INVADERS_DX = - INVADERS_DX;
 	}
 	
 	// move each invader according to the group's speed
 	for (int k = 0; k < scene.invaders.size(); k++) {
 		invader = scene.invaders.get(k);
-		invader.move(invadersDx, borderReached ? invadersDy : 0);
+		invader.move(INVADERS_DX, borderReached ? invadersDy : 0);
 	}
 	
 	
@@ -132,6 +157,7 @@ void draw() {
 			for (int l = 0; l < scene.invaders.size(); l++) {
 				invader = scene.invaders.get(l);
 				if (shot.hurt(invader)) {
+					Logger.info("You killed an invader!");
 					invader.isAlive = false;
 					invader.destroy();
 					shot.destroy();
@@ -143,7 +169,7 @@ void draw() {
 	// move invaders down when they reached sides of the scene
 	for (int k = 0; k < scene.invaders.size(); k++) {
 		invader = scene.invaders.get(k);
-		invader.move(invadersDx, borderReached ? invadersDy : 0);
+		invader.move(INVADERS_DX, borderReached ? invadersDy : 0);
 	}
 	
 	// if no invaders remains, game is finished
@@ -153,13 +179,12 @@ void draw() {
 	
 }
 
-int playerDx = 5;
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move(- playerDx);
+		player.move(- PLAYER_DX);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
-		player.move(playerDx);
+		player.move(PLAYER_DX);
 	}
 	
 	if (keyboard.isPressed(KEY_SPACE)) {

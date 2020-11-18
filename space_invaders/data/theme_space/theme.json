@@ -1,0 +1,19 @@
+{
+    "color": {
+        "text": "FFFFFFFF",
+        "background": "00000000",
+        "laser": "FFFF0000",
+        "bullet": "FFFFFF00"
+    },
+    "size": {
+        "invader": 50,
+        "laser": 20,
+        "bullet": 15
+    },
+    "velocity": {
+        "player": 8,
+        "invader": 3,
+        "bullet": 3,
+        "laser": 15
+    }
+}
