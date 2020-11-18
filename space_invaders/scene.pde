@@ -21,15 +21,16 @@ class Target extends Drawable{
 */
 class Scene extends Drawable{
 	// scene properties
+	Theme theme;
 	int width, height;
-	Target target = null;
-	Player player = null;
-	
+
 	// state variables
 	boolean isGameOver = false;
 	String gameOverMessage = "";
 	
 	// drawable entities
+	Target target = null;
+	Player player = null;
 	ArrayList<Drawable> items;
 	ArrayList<Invader> invaders;
 	ArrayList<Shot> shots;
@@ -38,6 +39,10 @@ class Scene extends Drawable{
 		this.width = width;
 		this.height = height;
 		this.reset();
+	}
+
+	void setTheme(Theme theme){
+		this.theme = theme;
 	}
 
 	void setPlayer(Player player){
@@ -111,7 +116,7 @@ class Scene extends Drawable{
 	* individually draw each element of the scene
 	*/
 	void draw() {
-		background(0);
+		background(theme.getColor("background"));
 
 		if (isGameOver) {
 			int titleWidth = int(0.8 * this.width * 0.1);
