@@ -23,17 +23,23 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	
 	// load textures
 	int charactersSize = 80;
-	HashMap<Integer, PImage> invadersSprites = loadInvadersSprites(charactersSize);
+	ThemeLoader theme = new ThemeLoader("theme_frog");
 	
-	// create scene items
-	player = new Player(scene, loadImage("player.png"));
+	// add target to the scene
+	Target target = new Target(scene, theme.getTargetSprite());
+	scene.setTarget(target);
+
+	// add player to the scene
+	player = new Player(scene, theme.getPlayerSprite());
+	scene.setPlayer(player);
+
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {
 		for (int i = 0; i < invadersRows; i++) {
 			// instanciate j cols, i rows of invaders
 			invaders.add(
-				new Invader(scene, j, i, charactersSize, invadersSprites.get(i))
+				new Invader(scene, j, i, charactersSize, theme.getInvaderSprite(i))
 				);
 		}
 	}
@@ -91,9 +97,9 @@ void draw() {
 			break;
 		}
 		
-		// invaders reached earth
-		if (invader.earthReached()) {
-			scene.gameOver("Aliens reached earth...\nGame over!");
+		// invaders reached target
+		if (invader.targetReached()) {
+			scene.gameOver("Aliens reached target...\nGame over!");
 			break;
 		}
 	}
@@ -157,7 +163,7 @@ int playerDx = 5;
 
 void eventsHandler() {
 	if (keyboard.isPressed(KEY_LEFT)) {
-		player.move(- playerDx);
+		player.move( - playerDx);
 	} else if (keyboard.isPressed(KEY_RIGHT)) {
 		player.move(playerDx);
 	}

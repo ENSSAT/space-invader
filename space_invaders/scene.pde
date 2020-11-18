@@ -1,16 +1,18 @@
-
-class Earth extends Drawable{
-	int earthOffset;
+/**
+* Object to reach. Typically target in space invader.
+*/
+class Target extends Drawable{
+	int targetOffset;
 	PImage img;
 	
-	Earth(Scene scene) {
-		img = loadImage("earth.jpg");
+	Target(Scene scene, PImage img) {
+		this.img = img;
 		img.resize(scene.width, int(scene.width * img.height / img.width));
-		earthOffset = scene.height - img.height;
+		targetOffset = scene.height - img.height;
 	}
 	
 	void draw() {
-		image(img, 0, earthOffset);
+		image(img, 0, targetOffset);
 	}
 }
 
@@ -20,7 +22,8 @@ class Earth extends Drawable{
 class Scene extends Drawable{
 	// scene properties
 	int width, height;
-	Earth earth;
+	Target target = null;
+	Player player = null;
 	
 	// state variables
 	boolean isGameOver = false;
@@ -36,6 +39,14 @@ class Scene extends Drawable{
 		this.height = height;
 		this.reset();
 	}
+
+	void setPlayer(Player player){
+		this.player = player;
+	}
+
+	void setTarget(Target target){
+		this.target = target;
+	}
 	
 	void gameOver(String message) {
 		println("Set game over message" + message);
@@ -44,6 +55,7 @@ class Scene extends Drawable{
 	}
 	
 	void clear() {
+		// items marked for removal...
 		this.items = new ArrayList();
 		this.shots = new ArrayList();
 		this.invaders = new ArrayList();
@@ -73,9 +85,6 @@ class Scene extends Drawable{
 	
 	void reset() {
 		this.clear();
-		// create earth and add it to the scene
-		this.earth = new Earth(this);
-		this.add(this.earth);
 	}
 	
 	boolean gameRunning() {
@@ -103,24 +112,11 @@ class Scene extends Drawable{
 	*/
 	void draw() {
 		background(0);
-		
-		for (int i = 0; i < items.size(); i++) {
-			items.get(i).draw();
-		}
-		
-		// draw shots
-		for (int i = 0; i < shots.size(); i++) {
-			shots.get(i).draw();
-		}
-		
-		for (int i = 0; i < invaders.size(); i++) {
-			invaders.get(i).draw();
-		}
-		
+
 		if (isGameOver) {
 			int titleWidth = int(0.8 * this.width * 0.1);
 			int halfWidth = int(this.width / 2);
-			int halfHeight = int(0.5 * this.earth.earthOffset);
+			int halfHeight = int(0.5 * this.height);
 			int borderWidth = 3;
 			
 			textSize(int(titleWidth * 0.3));
@@ -140,6 +136,19 @@ class Scene extends Drawable{
 			
 			fill(255, 255, 255);
 			text(this.gameOverMessage, halfWidth, halfHeight);
+			return;
+		}
+		
+		target.draw();
+		player.draw();
+		
+		// draw shots
+		for (int i = 0; i < shots.size(); i++) {
+			shots.get(i).draw();
+		}
+		
+		for (int i = 0; i < invaders.size(); i++) {
+			invaders.get(i).draw();
 		}
 	}
 }

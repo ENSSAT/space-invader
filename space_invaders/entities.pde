@@ -68,7 +68,6 @@ class Player extends Entity{
 			scene.getPlayerSize(),
 			sprite
 			);
-		scene.add(this);
 	}
 	
 	void destroy() {
@@ -86,7 +85,7 @@ class Player extends Entity{
 			this, 
 			new Point(
 			this.center.x,
-			this.scene.earth.earthOffset + int(0.2 * this.size)
+			this.scene.target.targetOffset + int(0.2 * this.size)
 			), 
 			DIRECTION_UP
 			)
@@ -132,7 +131,7 @@ class Invader extends Entity{
 		INVADERS_SIMULTANEOUS_SHOTS += 1;
 	}
 	
-	boolean earthReached() {
-		return this.hitbox.y1 > this.scene.earth.earthOffset;
+	boolean targetReached() {
+		return this.hitbox.y1 > this.scene.target.targetOffset;
 	}
 }
