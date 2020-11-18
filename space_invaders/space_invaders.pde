@@ -25,6 +25,7 @@ HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
 void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// reset locks
 	scene.reset();
+	INVADERS_SIMULTANEOUS_SHOTS = 0;
 	
 	// restore settings
 	INVADERS_SIMULTANEOUS_SHOTS = 0;
@@ -43,7 +44,7 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	// add player to the scene
 	player = new Player(scene, theme.getPlayerSprite());
 	scene.setPlayer(player);
-	
+
 	invaders = new ArrayList();
 	
 	for (int j = 0; j < invadersCols; j++) {

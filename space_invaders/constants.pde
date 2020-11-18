@@ -16,6 +16,7 @@ final int DIRECTION_LEFT = - 1;
 // shots constants
 final int INVADER_MAX_SIMULTANEOUS_SHOTS = 2;
 
+
 // colors
 final int COLOR_WHITE = 0xFFFFFFFF;
 final int COLOR_RED = 0xFFFF0000;
