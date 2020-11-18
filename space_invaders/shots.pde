@@ -58,7 +58,7 @@ abstract class Shot extends Moveable{
 
 class Bullet extends Shot{
 	Bullet(Scene scene, Entity entity, Point center, int direction) {
-		super(scene, entity, center, LASER_RADIUS, COLOR_RED, direction * BULLET_VELOCITY);
+		super(scene, entity, center, LASER_RADIUS, scene.theme.getColor("bullet"), direction * BULLET_VELOCITY);
 	}
 }
 
@@ -68,7 +68,7 @@ class Laser extends Shot{
 	Point initial;
 	
 	Laser(Scene scene, Entity entity, Point center, int direction) {
-		super(scene, entity, center, LASER_RADIUS, COLOR_RED, direction * LASER_VELOCITY);
+		super(scene, entity, center, LASER_RADIUS, scene.theme.getColor("laser"), direction * LASER_VELOCITY);
 		initial = new Point(center.x, center.y);
 	}
 	

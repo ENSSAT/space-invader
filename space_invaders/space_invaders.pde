@@ -60,7 +60,7 @@ void settings() {
 	scene = new Scene(sceneWidth, sceneHeight);
 
 	// load one of the themes
-	theme = new Theme("theme_clown");
+	theme = new Theme("theme_frog");
 	scene.setTheme(theme);
 
 	// stop game with welcome message
