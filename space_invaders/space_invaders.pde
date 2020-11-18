@@ -3,6 +3,7 @@ Scene scene;
 Player player;
 ArrayList<Invader> invaders;
 Keyboard keyboard;
+Theme theme;
 
 
 HashMap<Integer, PImage> loadInvadersSprites(Integer size) {
@@ -23,7 +24,6 @@ void newGame(Scene scene, int invadersRows, int invadersCols) {
 	
 	// load textures
 	int charactersSize = 80;
-	ThemeLoader theme = new ThemeLoader("theme_frog");
 	
 	// add target to the scene
 	Target target = new Target(scene, theme.getTargetSprite());
@@ -55,7 +55,15 @@ void settings() {
 	
 	// initialize a new game
 	size(sceneWidth, sceneHeight);
+
+	// instanciate theme
 	scene = new Scene(sceneWidth, sceneHeight);
+
+	// load one of the themes
+	theme = new Theme("theme_clown");
+	scene.setTheme(theme);
+
+	// stop game with welcome message
 	scene.gameOver("Welcome back!");
 }
 
