@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on tags 'v*' (releases)
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+env:
+  SKETCH_NAME: space_invader
+  PROCESSING_JAVA: processing_java
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Setup Processing
+        uses: ifP1/setup-processing@v1.0.2
+        with:
+          version: 3.5.4
+      
+      - name: Build for linux64
+        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/linux64 --export --platforms=linux64
+      
+      - name: Build for linux32
+        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/linux32 --export --platforms=linux32
+        
+      - name: Build for windows64
+        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/windows64 --export --platforms=windows64
+      
+      - name: Build for windows32
+        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/windows32 --export --platforms=windows32
