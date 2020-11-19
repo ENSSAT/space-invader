@@ -33,7 +33,7 @@
         {% endif %}
         <a href="{{ site.github.releases_url }}" class="btn">Download</a>
 
-        {% for button in page.buttons %}
+        {% for button in page.additional_buttons %}
         <a href="{{button.link}}" class="btn">{{button.title}}</a>
         {% endif %}
     </header>

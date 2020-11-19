@@ -3,6 +3,6 @@ theme: jekyll-theme-cayman
 title: Space Invaders
 description: A variant of the famous "Space Invaders" built using processing language.
 
-buttons:
+additional_buttons:
   - title: Changelog
     link: ./changelog.md
