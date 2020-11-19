@@ -1,11 +1,11 @@
-# Space-Invaders
 
-- [Space-Invaders](#space-invaders)
-  - [Preview](#preview)
-    - [Theme frog](#theme-frog)
-    - [Theme space](#theme-space)
-    - [Create your own theme](#create-your-own-theme)
-  - [Installation](#installation)
+- [Preview](#preview)
+  - [Theme frog](#theme-frog)
+  - [Theme space](#theme-space)
+  - [Create your own theme](#create-your-own-theme)
+- [Installation](#installation)
+  - [Windows](#windows)
+  - [Linux](#linux)
 
 ## Preview
 
@@ -29,6 +29,15 @@ You can easily create your own by copying one of the theme folder and editing th
 
 ## Installation
 
-1. [Download](https://github.com/ENSSAT/space-invader/releases/) the latest version of the game for your platform.
+### Windows
+
+1. [Download](https://github.com/ENSSAT/space-invader/releases/) the latest version for windows.
 2. Extract content of the zip where you want to install it.
-3. To play, launch `space_invaders(.exe)`
+3. (optional) Right click on `space_invaders.exe` and create a desktop shortcut.
+4. To play, double click on `space_invaders.exe` or previously created shortcut.
+
+### Linux
+
+1. [Download](https://github.com/ENSSAT/space-invader/releases/) the latest version for linux.
+2. Extract content of the zip where you want to install it.
+3. To play, run `./space_invaders` in your terminal
