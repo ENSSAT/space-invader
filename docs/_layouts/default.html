@@ -8,6 +8,8 @@
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="icon" href="./favicon.ico" />
+
     <style>
         .page-header {
             padding: 1em;
@@ -21,14 +23,14 @@
         <h2 class="project-tagline">
             {{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
 
-        <img src="/img/favicon.svg" alt="space invader icon">
-        <a href="/" class="btn">Home</a>
+        <img src="./img/favicon.svg" alt="space invader icon">
+        <a href="./" class="btn">Home</a>
 
         {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
         {% endif %}
 
-        <a href="/changelog/" class="btn">Changelog</a>
+        <a href="./changelog/" class="btn">Changelog</a>
         <a href="{{ site.github.releases_url }}" class="btn">Download</a>
     </header>
 
