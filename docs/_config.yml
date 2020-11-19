@@ -2,11 +2,3 @@ theme: jekyll-theme-cayman
 
 title: Space Invaders
 description: A variant of the famous "Space Invaders" built using processing language.
-
-colors:
-    gradient_left: "#5d4037"
-    gradient_right: "#321911"
-    header: "#fff"
-    android_theme: "#000"
-    link: "#8b6b61"
-    section_title: "#321911"
