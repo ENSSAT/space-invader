@@ -32,6 +32,10 @@
         <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
         {% endif %}
         <a href="{{ site.github.releases_url }}" class="btn">Download</a>
+
+        {% for button in page.buttons %}
+        <a href="{{button.link}}" class="btn">{{button.title}}</a>
+        {% endif %}
     </header>
 
     <main id="content" class="main-content" role="main">
