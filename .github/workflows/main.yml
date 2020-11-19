@@ -2,16 +2,14 @@
 
 name: CI
 
-# Controls when the action will run. Triggers the workflow on tags 'v*' (releases)
+# Controls when the action will run. Triggers the workflow on releases
 on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types: [created]  
 
 env:
-  SKETCH_NAME: space_invader
-  PROCESSING_JAVA: processing_java
+  SKETCH_NAME: space_invaders
+  PROCESSING_VERSION: 3.5.4
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,25 +17,35 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        platforms: [linux, windows]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
-      - name: Setup Processing
-        uses: ifP1/setup-processing@v1.0.2
+      - uses: sylvanld/build-processing-action@v1
         with:
-          version: 3.5.4
-      
-      - name: Build for linux64
-        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/linux64 --export --platforms=linux64
-      
-      - name: Build for linux32
-        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/linux32 --export --platforms=linux32
-        
-      - name: Build for windows64
-        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/windows64 --export --platforms=windows64
-      
-      - name: Build for windows32
-        run: $PROCESSING_JAVA --sketch=$(SKETCH_NAME)/ --output=$DIST_DIR/windows32 --export --platforms=windows32
+          sketch: ${{env.SKETCH_NAME}}
+          processing_version: ${{env.PROCESSING_VERSION}}
+          target_platform: ${{matrix.platforms}}
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./artifacts/${{matrix.platforms}}.zip
+          asset_name: ${{env.SKETCH_NAME}}-${{matrix.platforms}}.zip
+          asset_content_type: application/zip
